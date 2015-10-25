@@ -33,9 +33,17 @@ def move_x_up(mat):
 	else:
 		print "\nOperation not allowed"
 
+def move_x_down(mat):
+	if can_move_down(mat):
+		print "\nMoving x down"
+		index = mat.index(-1)
+		mat[index + MAT_SIZE], mat[index] = mat[index], mat[index + MAT_SIZE]
+	else:
+		print "\nOperation not allowed"
+
 
 if __name__ == "__main__":
-	mat = [1, 2, 3, 4, 5, 6, 7, 8, -1]
+	mat = [1, 2, 3, -1, 4, 5, 6, 7, 8]
 	# TODO remove this later
 	# print "Enter elements for %d Puzzle." % PUZZLE_TYPE
 	# print "NOTE: Use \"x\" for blank.\n"
@@ -51,4 +59,8 @@ if __name__ == "__main__":
 	move_x_up(mat)
 	print_board(mat)
 	move_x_up(mat)
+	print_board(mat)
+	move_x_down(mat)
+	print_board(mat)
+	move_x_down(mat)
 	print_board(mat)
