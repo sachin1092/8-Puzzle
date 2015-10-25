@@ -15,29 +15,16 @@ def print_board(mat):
 	print "\n"
 
 def can_move_up(mat):
-	index = mat.index(-1)
-	if index >= MAT_SIZE:
-		return True
-	return False
+	return True if mat.index(-1) >= MAT_SIZE else False
 
 def can_move_down(mat):
-	index = mat.index(-1)
-	if index < PUZZLE_TYPE + 1 - MAT_SIZE:
-		return True
-	return False
-	returdownFalse
+	return True if mat.index(-1) < PUZZLE_TYPE + 1 - MAT_SIZE else False
 
 def can_move_left(mat):
-	index = mat.index(-1)
-	if index % MAT_SIZE == 0:
-		return False
-	return True
+	return False if mat.index(-1) % MAT_SIZE == 0 else True
 
 def can_move_right(mat):
-	index = mat.index(-1)
-	if index % MAT_SIZE == MAT_SIZE - 1:
-		return False
-	return True
+	return False if mat.index(-1) % MAT_SIZE == MAT_SIZE - 1 else True
 
 def move_x_up(mat):
 	pass
