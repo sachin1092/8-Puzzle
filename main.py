@@ -116,15 +116,15 @@ class Problem(object):
 		else:
 			print "\nOperation not allowed"
 
-# def general_search(problem, queueing_func):
-# 	# make nodes here
-# 	nodes = [problem.get_current_state()]
-# 	while True:
-# 		if not len(nodes): return None 
-# 		node = nodes.pop(0)
-# 		if problem.goal_test(): 
-# 			return node
-# 		nodes = QUEUEING-FUNCTION(nodes, EXPAND(node, problem.OPERATORS))  
+def general_search(problem, queueing_func):
+	# make nodes here
+	nodes = [problem.get_current_state()]
+	while len(nodes):
+		node = nodes.pop(0)
+		if problem.goal_test(): 
+			return node
+		nodes = QUEUEING-FUNCTION(nodes, EXPAND(node, problem.OPERATORS))  
+	return None
 	
 
 if __name__ == "__main__":
@@ -132,16 +132,21 @@ if __name__ == "__main__":
 	mat = [1, 2, 4, 7, 5, -1, 3, 6, 8]
 	# mat = [1, 2, 3, 4, 5, 6, 7, 8, -1, 9, 10, 11, 12, 13, 14, 15]
 	problem = Problem(mat)
+	# TODO remove this later
+	print "Welcome to the awesome 8-puzzle solver."
+	print "Type \"1\" to use a default puzzle, or \"2\" to enter your own puzzle."
+	choice = int(raw_input())
+	if choice == 2:
+		print "Enter elements for %d Puzzle." % PUZZLE_TYPE
+		print "NOTE: Use \"x\" for blank.\n"
+		for i in xrange(MAT_SIZE):
+			print "Enter elements for row %d" % (i + 1)
+			mat.extend([-1 if x == "x" else int(x) for x in raw_input().split()])
+
 	print "Initial State",
 	problem.print_current_board()
 	print "Goal State",
 	Problem.print_board(problem.get_goal_state())
-	# TODO remove this later
-	# print "Enter elements for %d Puzzle." % PUZZLE_TYPE
-	# print "NOTE: Use \"x\" for blank.\n"
-	# for i in xrange(MAT_SIZE):
-		# print "Enter elements for row %d" % (i + 1)
-		# mat.extend([-1 if x == "x" else int(x) for x in raw_input().split()])
 	print "can move up? ", problem.can_move_up()
 	print "can move down? ", problem.can_move_down()
 	print "can move left? ", problem.can_move_left()
