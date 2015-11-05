@@ -1,20 +1,41 @@
 import math
 from random import shuffle
+import heapq
 
-PUZZLE_TYPE = 3
+PUZZLE_TYPE = 8
 MAT_SIZE = int(math.sqrt(PUZZLE_TYPE + 1))
+
+
+class PriorityQueue(object):
+
+    def __init__(self):
+        self.elements = []
+    
+    def empty(self):
+        return len(self.elements) == 0
+    
+    def put(self, item, priority):
+        heapq.heappush(self.elements, (priority, item))
+    
+    def get(self):
+        return heapq.heappop(self.elements)[1]
 
 class Problem(object):
 
 	def __init__(self, initial_state=None):
-		self.current_state = initial_state
+		self.initial_state = initial_state
 		self.goal_state = self.get_goal()
+		self.explored = []
 
-	def goal_test():
-		return self.current_state == self.goal_state
+	def goal_test(self, node):
+		self.explored.append(node)
+		return node == self.goal_state
+
+	def is_explored(self, node):
+		return node in self.explored
 
 	def get_current_state(self):
-		return self.current_state
+		return self.initial_state
 
 	def get_goal_state(self):
 		return self.goal_state
@@ -27,7 +48,7 @@ class Problem(object):
 		return goal
 
 	def print_current_board(self):
-		print_board(self.current_state)
+		print_board(self.initial_state)
 
 """
 Print the current state of board
@@ -114,31 +135,38 @@ def move_x_right(mat):
 	return None
 
 def general_search(problem, queueing_func):
-	nodes = [problem.get_current_state()]
-	while len(nodes):
-		node = nodes.pop(0)
-		if problem.goal_test(): 
+	# import pdb
+	# pdb.set_trace()
+	# nodes = [problem.get_current_state()]
+	nodes = PriorityQueue()
+	nodes.put(problem.get_current_state(), 0)
+	while not nodes.empty():
+		node = nodes.get()
+		print "Expanding...."
+		print_board(node)
+		if problem.goal_test(node): 
 			return node
-		queueing_func(nodes, expand(node))  
+		queueing_func(nodes, expand(node, problem))  
 	
-def expand(node):
+def expand(node, problem):
 	all_nodes = []
-	node1 = move_x_up(node)
-	node2 = move_x_down(node)
-	node3 = move_x_left(node)
-	node4 = move_x_right(node)
-	if node1:
+	node1 = move_x_up(node[:])
+	node2 = move_x_down(node[:])
+	node3 = move_x_left(node[:])
+	node4 = move_x_right(node[:])
+	if node1 and not problem.is_explored(node1):
 		all_nodes.append(node1)
-	if node2:
+	if node2 and not problem.is_explored(node2):
 		all_nodes.append(node2)
-	if node3:
+	if node3 and not problem.is_explored(node3):
 		all_nodes.append(node3)
-	if node4:
+	if node4 and not problem.is_explored(node4):
 		all_nodes.append(node4)
 	return all_nodes
 
 def uniform_cost_search(nodes, new_nodes):
-	nodes.extends(new_nodes)
+	for node in new_nodes:
+		nodes.put(node, 0)
 
 def calculate_misplaced(node):
 	count = 0
@@ -148,16 +176,12 @@ def calculate_misplaced(node):
 	return count
 
 def misplaced_tile_heuristic(nodes, new_nodes):
-	pass
+	nodes = new_nodes
 
 def manhattan_distance_heuristic(nodes, new_nodes):
 	pass
 
 if __name__ == "__main__":
-	# mat = [1, 2, 3, -1]
-	# mat = [1, 2, 4, 7, 5, -1, 3, 6, 8]
-	# mat = [1, 2, 3, 4, 5, 6, 7, 8, -1, 9, 10, 11, 12, 13, 14, 15]
-	# TODO remove this later
 	print "Welcome to the awesome %d-puzzle solver." % PUZZLE_TYPE
 	print "Type \"1\" to use a default puzzle, or \"2\" to enter your own puzzle."
 	choice = int(raw_input())
@@ -179,6 +203,8 @@ if __name__ == "__main__":
 	problem.print_current_board()
 	print "Goal State",
 	print_board(problem.get_goal_state())
+	# print expand(problem.get_current_state())
+	general_search(problem, uniform_cost_search)
 	# print "can move up? ", can_move_up(problem.get_current_state())
 	# print "can move down? ", can_move_down(problem.get_current_state())
 	# print "can move left? ", can_move_left(problem.get_current_state())
