@@ -138,6 +138,7 @@ def general_search(problem, queueing_func):
 	# import pdb
 	# pdb.set_trace()
 	# nodes = [problem.get_current_state()]
+	
 	nodes = PriorityQueue()
 	nodes.put(problem.get_current_state(), 0)
 	while not nodes.empty():
@@ -145,6 +146,7 @@ def general_search(problem, queueing_func):
 		print "Expanding...."
 		print_board(node)
 		if problem.goal_test(node): 
+			print "Goal State"
 			return node
 		queueing_func(nodes, expand(node, problem))  
 	
@@ -171,9 +173,12 @@ def uniform_cost_search(nodes, new_nodes):
 def calculate_misplaced(node):
 	count = 0
 	for i in xrange(PUZZLE_TYPE):
-		if i != node[i]:
+		if i+1 != node[i]:
 			count += 1
 	return count
+
+def manhatten_distance(node):
+	count = 0
 
 def misplaced_tile_heuristic(nodes, new_nodes):
 	nodes = new_nodes
@@ -187,10 +192,7 @@ if __name__ == "__main__":
 	choice = int(raw_input())
 	mat = []
 	if choice == 1:
-		for i in xrange(PUZZLE_TYPE):
-			mat.append(i + 1)
-		mat.append(-1)
-		shuffle(mat)
+		mat = [1, 2, 3, 4, -1, 6, 7, 5, 8]
 	elif choice == 2:
 		print "Enter elements for %d Puzzle." % PUZZLE_TYPE
 		print "NOTE: Use \"x\" for blank.\n"
