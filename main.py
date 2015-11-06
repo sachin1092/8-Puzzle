@@ -10,15 +10,17 @@ class PriorityQueue(object):
 
     def __init__(self):
         self.elements = []
+        self.max_elements = 0
+
+    def get_max_elements(self):
+    	return self.max_elements
     
     def empty(self):
         return len(self.elements) == 0
     
     def put(self, item, h=0, g=0):
         heapq.heappush(self.elements, (h + g, h, g, item))
-    
-    def get(self):
-        return heapq.heappop(self.elements)[1]
+        self.max_elements = self.max_elements if self.max_elements > len(self.elements) else len(self.elements)
 
     def get_item(self):
         return heapq.heappop(self.elements)
@@ -98,11 +100,9 @@ Performs the move up operation
 """
 def move_x_up(mat):
 	if can_move_up(mat):
-		# print "\nMoving x up"
 		index = mat.index(-1)
 		mat[index - MAT_SIZE], mat[index] = mat[index], mat[index - MAT_SIZE]
 		return mat
-		# print "\nOperation not allowed"
 	return None
 
 """
@@ -110,11 +110,9 @@ Performs the move down operation
 """
 def move_x_down(mat):
 	if can_move_down(mat):
-		# print "\nMoving x down"
 		index = mat.index(-1)
 		mat[index + MAT_SIZE], mat[index] = mat[index], mat[index + MAT_SIZE]
 		return mat
-		# print "\nOperation not allowed"
 	return None
 
 """
@@ -122,11 +120,9 @@ Performs the move left operation
 """
 def move_x_left(mat):
 	if can_move_left(mat):
-		# print "\nMoving x left"
 		index = mat.index(-1)
 		mat[index - 1], mat[index] = mat[index], mat[index - 1]
 		return mat
-		# print "\nOperation not allowed"
 	return None
 
 """
@@ -134,13 +130,16 @@ Performs the move down operation
 """
 def move_x_right(mat):
 	if can_move_right(mat):
-		# print "\nMoving x right"
 		index = mat.index(-1)
 		mat[index + 1], mat[index] = mat[index], mat[index + 1]
 		return mat
 	return None
 
+"""
+General search algorithm
+"""
 def general_search(problem, queueing_func):
+	depth = 0
 	nodes = PriorityQueue()
 	nodes.put(problem.get_current_state(), 0, 0)
 	while not nodes.empty():
@@ -149,15 +148,21 @@ def general_search(problem, queueing_func):
 		if (entire_node[2] or entire_node[1]):
 			print "The best state to expand with a g(n) = %d and h(n) = %d is.." % (entire_node[2], entire_node[1]),
 		print_board(node)
-		print "Expanding this state\n\n"
 		if problem.goal_test(node): 
 			print "Goal State"
+			print "To solve this problem the search algorithm expanded a total of %d nodes."%problem.get_level()
+			print "The maximum number of nodes in the queue at any one time was %d."% nodes.get_max_elements()
+			print "The depth of the goal node was %d" % depth
 			return node
+		print "Expanding this state\n\n"
 		queueing_func(nodes, expand(node, problem))  
+		depth += 1
 	
+"""
+Expands the current node using all the operators and returns the queue.
+"""
 def expand(node, problem):
 	all_nodes = PriorityQueue()
-
 	node1 = move_x_up(node[:])
 	node2 = move_x_down(node[:])
 	node3 = move_x_left(node[:])
@@ -172,11 +177,17 @@ def expand(node, problem):
 		all_nodes.put(node4, problem.get_level())
 	return all_nodes
 
+"""
+Queueing function for Unifrom Cost Search.
+"""
 def uniform_cost_search(nodes, new_nodes):
 	while not new_nodes.empty():
 		node = new_nodes.get_item()
 		nodes.put(node[3])
 
+"""
+Calculates the heuristic using the misplaced tile.
+"""
 def calculate_misplaced(node):
 	count = 0
 	for i in xrange(PUZZLE_TYPE):
@@ -184,7 +195,10 @@ def calculate_misplaced(node):
 			count += 1
 	return count
 
-def manhatten_distance(node):
+"""
+Calculates the heuristic using the manhattan distance.
+"""
+def manhattan_distance(node):
 	count = 0
 	for i in xrange(PUZZLE_TYPE):
 		index = node.index(i + 1)
@@ -197,15 +211,21 @@ def manhatten_distance(node):
 	count += (row_diff + col_diff)
 	return count
 
+"""
+Queueing function for Misplaced Tile Heuristic.
+"""
 def misplaced_tile_heuristic(nodes, new_nodes):
 	while not new_nodes.empty():
 		node = new_nodes.get_item()
 		nodes.put(node[3], calculate_misplaced(node[3]), node[0])
 
+"""
+Queueing function for Manhattan Distance Heuristic.
+"""
 def manhattan_distance_heuristic(nodes, new_nodes):
 	while not new_nodes.empty():
 		node = new_nodes.get_item()
-		nodes.put(node[3], manhatten_distance(node[3]), node[0])
+		nodes.put(node[3], manhattan_distance(node[3]), node[0])
 
 if __name__ == "__main__":
 	print "Welcome to the awesome %d-puzzle solver." % PUZZLE_TYPE
