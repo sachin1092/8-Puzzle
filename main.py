@@ -1,5 +1,4 @@
 import math
-import heapq
 import time
 from operator import itemgetter
 
@@ -19,7 +18,6 @@ class PriorityQueue(object):
         return len(self.elements) == 0
     
     def put(self, item, h=0, g=0, priority=0):
-        # heapq.heappush(self.elements, (h + g, h, g, item))
         self.elements.append((priority, h, g, item))
         self.elements.sort(key=itemgetter(0))
         self.max_elements = self.max_elements if self.max_elements > len(self.elements) else len(self.elements)
